@@ -1,0 +1,56 @@
+.build-control {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5px 0;
+}
+
+.build-control__label {
+  padding: 10px;
+  font-weight: bold;
+  width: 80px;
+}
+
+.build-control__btn {
+  display: block;
+  font: inherit;
+  padding: 5px;
+  margin: 0 5px;
+  width: 80px;
+  border: 1px solid #AA6817;
+  cursor: pointer;
+  outline: none;
+}
+
+.build-control__btn:disabled {
+  background-color: #AC9980;
+  border: 1px solid #7E7365;
+  color: #ccc;
+  cursor: default;
+}
+
+.build-control__btn:hover:disabled {
+  background-color: #AC9980;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.build-control__btn--less {
+  background-color: #D39952;
+  color: #fff;
+}
+
+.build-control__btn--more {
+  background-color: #8F5E1E;
+  color: #fff;
+}
+
+.build-control__btn--less:hover, .build-control__btn--less:active {
+  background-color: #DAA972;
+  color: white;
+}
+
+.build-control__btn--more:hover,.build-control__btn--more:active {
+  background-color: #99703F;
+  color: white;
+}

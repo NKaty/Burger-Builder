@@ -22,7 +22,6 @@ class BurgerBuilder extends Component {
     ingredients: null,
     totalPrice: INGREDIENT_PRICES.start,
     purchasing: false,
-    loadingOrder: false,
     error: false
   }
 
@@ -61,27 +60,19 @@ class BurgerBuilder extends Component {
   }
 
   purchaseContinueHandler = () => {
-    this.setState({ loading: true })
-    const order = {
-      ingredients: this.state.ingredients,
-      price: this.state.totalPrice,
-      customer: {
-        name: 'Max',
-        address: {
-          street: 'Teststreet 1',
-          zipCode: '42355',
-          country: 'Germany'
-        },
-        email: 'test@test.com'
-      },
-      deliveryMethod: 'fastest'
-    }
-    axios
-      .post('/orders.json', order)
-      .then(response =>
-        this.setState({ loadingOrder: false, purchasing: false })
+    const queryParams = []
+
+    for (let ingredient in this.state.ingredients) {
+      queryParams.push(
+        `${encodeURIComponent(ingredient)}=${encodeURIComponent(
+          this.state.ingredients[ingredient]
+        )}`
       )
-      .catch(error => this.setState({ loadingOrder: false, purchasing: false }))
+    }
+
+    queryParams.push(`price=${this.state.totalPrice}`)
+    const queryString = queryParams.join('&')
+    this.props.history.push({ pathname: '/checkout', search: `?${queryString}` })
   }
 
   get burgerBuilderBody() {
@@ -120,15 +111,13 @@ class BurgerBuilder extends Component {
   )
 
   render() {
-    const isLoaded = this.state.loadingOrder || !this.state.ingredients
-
     return (
       <Fragment>
         <Modal
           show={this.state.purchasing}
           modalCancel={this.purchaseCancelHandler}
         >
-          {this.getModalBody(isLoaded, this.state.purchasing)}
+          {this.getModalBody(!this.state.ingredients, this.state.purchasing)}
         </Modal>
         {this.state.ingredients ? (
           this.burgerBuilderBody

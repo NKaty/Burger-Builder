@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import Button from '../../../components/UI/Button/Button'
 import Spinner from '../../../components/UI/Spinner/Spinner'
 import axios from '../../../axios-orders'
 import Input from '../../../components/UI/Input/Input'
+import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler'
+import {purchaseBurger} from '../../../ac'
 
 import './ContactData.css'
 
@@ -35,7 +38,8 @@ class ContactData extends Component {
         label: 'Email',
         value: '',
         validation: {
-          required: true
+          required: true,
+          email: true
         },
         valid: false,
         touched: false
@@ -101,32 +105,25 @@ class ContactData extends Component {
         validation: {},
         valid: true
       }
-    },
-    loadingOrder: false
+    }
   }
 
   orderHandler = ev => {
     ev.preventDefault()
-    this.setState({ loadingOrder: true })
     const formData = {}
 
     for (let formElement in this.state.orderForm) {
       formData[formElement] = this.state.orderForm[formElement].value
     }
 
-    const { ingredients, price, history } = this.props
+    const { ingredients, price, purchaseBurger } = this.props
     const order = {
       ingredients,
       price,
       orderData: formData
     }
-    axios
-      .post('/orders.json', order)
-      .then(response => {
-        this.setState({ loadingOrder: false })
-        history.push('/')
-      })
-      .catch(error => this.setState({ loadingOrder: false }))
+
+    purchaseBurger(order)
   }
 
   checkInputValidity(value, rules) {
@@ -137,6 +134,11 @@ class ContactData extends Component {
     if (rules.minLength) isValid = value.length >= rules.minLength && isValid
 
     if (rules.maxLength) isValid = value.length <= rules.maxLength && isValid
+
+    if (rules.email) {
+      const pattern = /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/
+      isValid = pattern.test(value) && isValid
+    }
 
     return isValid
   }
@@ -173,7 +175,7 @@ class ContactData extends Component {
     return (
       <div className="contact-data">
         <h4>Enter your Contact Data</h4>
-        {!this.state.loadingOrder ? (
+        {!this.props.loadingOrder ? (
           <form onSubmit={this.orderHandler}>
             {formElements.map(element => (
               <Input
@@ -200,4 +202,12 @@ class ContactData extends Component {
   }
 }
 
-export default ContactData
+const mapStateToProps = (state, ownProps) => {
+  return {
+    ingredients: state.burger.ingredients,
+    price: state.burger.totalPrice,
+    loadingOrder: state.order.loadingOrder
+  }
+}
+
+export default connect(mapStateToProps, { purchaseBurger })(withErrorHandler(ContactData, axios))

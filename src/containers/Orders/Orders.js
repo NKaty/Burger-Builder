@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import Order from '../../components/Order/Order'
-import axios from '../../axios-orders'
+import { axiosOrders } from '../../axios-instances'
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler'
 import Spinner from '../../components/UI/Spinner/Spinner'
 import { fetchOrders } from '../../ac'
@@ -39,4 +39,4 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(
   mapStateToProps,
   { fetchOrders }
-)(withErrorHandler(Orders, axios))
+)(withErrorHandler(Orders, axiosOrders))

@@ -8,7 +8,7 @@ import Modal from '../../components/UI/Modal/Modal'
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary'
 import Spinner from '../../components/UI/Spinner/Spinner'
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler'
-import axios from '../../axios-orders'
+import { axiosOrders } from '../../axios-instances'
 import { INGREDIENT_PRICES } from '../../constants'
 import { addIngredient, removeIngredient, initIngredients } from '../../ac'
 
@@ -25,8 +25,9 @@ class BurgerBuilder extends Component {
 
   removeIngredientHandler = (type) => () => this.props.removeIngredient(type)
 
-  openModalHandler = () => {
-    this.setState({ purchasing: true })
+  purchaseHandler = () => {
+    if (!this.props.isAuth) this.props.history.replace('/auth')
+    else this.setState({ purchasing: true })
   }
 
   purchaseCancelHandler = () => {
@@ -38,21 +39,24 @@ class BurgerBuilder extends Component {
   }
 
   get burgerBuilderBody() {
-    const disabledInfo = { ...this.props.ingredients }
+    const { ingredients, totalPrice, isAuth } = this.props
+
+    const disabledInfo = { ...ingredients }
     for (let key in disabledInfo) {
       disabledInfo[key] = disabledInfo[key] <= 0
     }
 
     return (
       <Fragment>
-        <Burger ingredients={this.props.ingredients} />
+        <Burger ingredients={ingredients} />
         <BuildControls
           ingredientAdded={this.addIngredientHandler}
           ingredientRemoved={this.removeIngredientHandler}
           disabled={disabledInfo}
-          price={this.props.totalPrice}
-          purchasable={!(this.props.totalPrice === INGREDIENT_PRICES.start)}
-          ordered={this.openModalHandler}
+          price={totalPrice}
+          purchasable={!(totalPrice === INGREDIENT_PRICES.start)}
+          ordered={this.purchaseHandler}
+          isAuth={isAuth}
         />
       </Fragment>
     )
@@ -97,8 +101,9 @@ const mapStateToProps = (state, ownProps) => {
   return {
     ingredients: state.burger.ingredients,
     totalPrice: state.burger.totalPrice,
-    error: state.burger.error
+    error: state.burger.error,
+    isAuth: state.auth.token !== null
   }
 }
 
-export default connect(mapStateToProps, { addIngredient, removeIngredient, initIngredients })(withErrorHandler(BurgerBuilder, axios))
+export default connect(mapStateToProps, { addIngredient, removeIngredient, initIngredients })(withErrorHandler(BurgerBuilder, axiosOrders))

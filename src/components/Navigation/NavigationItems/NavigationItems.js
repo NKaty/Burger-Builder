@@ -4,10 +4,15 @@ import NavigationItem from './NavigationItem/NavigationItem'
 
 import './NavigationItems.css'
 
-const NavigationItems = () => (
-  <ul className="nav-items">
+const NavigationItems = ({ isAuth, stopBuilding }) => (
+  <ul className="nav-items" onClick={stopBuilding}>
     <NavigationItem link="/">Burger Builder</NavigationItem>
-    <NavigationItem link="/orders">Orders</NavigationItem>
+    {isAuth ? <NavigationItem link="/orders">Orders</NavigationItem> : null}
+    {isAuth ? (
+      <NavigationItem link="/logout">Logout</NavigationItem>
+    ) : (
+      <NavigationItem link="/auth">Authenticate</NavigationItem>
+    )}
   </ul>
 )
 

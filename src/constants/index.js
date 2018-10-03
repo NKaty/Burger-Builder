@@ -10,11 +10,17 @@ export const ADD_INGREDIENT = 'ADD_INGREDIENT'
 
 export const REMOVE_INGREDIENT = 'REMOVE_INGREDIENT'
 
+export const STOP_BUILDING = 'STOP_BUILDING'
+
 export const INIT_INGREDIENTS = 'INIT_INGREDIENTS'
 
 export const PURCHASE_BURGER = 'PURCHASE_BURGER'
 
 export const FETCH_ORDERS = 'FETCH_ORDERS'
+
+export const AUTH = 'AUTH'
+
+export const AUTH_LOGOUT = 'AUTH_LOGOUT'
 
 export const START = '_START'
 

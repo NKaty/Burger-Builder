@@ -3,10 +3,11 @@ import { connect } from 'react-redux'
 
 import Button from '../../../components/UI/Button/Button'
 import Spinner from '../../../components/UI/Spinner/Spinner'
-import axios from '../../../axios-orders'
+import { axiosOrders } from '../../../axios-instances'
 import Input from '../../../components/UI/Input/Input'
 import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler'
-import {purchaseBurger} from '../../../ac'
+import { purchaseBurger } from '../../../ac'
+import {checkInputValidity, checkFormValidity} from '../../../utils/validation'
 
 import './ContactData.css'
 
@@ -116,38 +117,22 @@ class ContactData extends Component {
       formData[formElement] = this.state.orderForm[formElement].value
     }
 
-    const { ingredients, price, purchaseBurger } = this.props
+    const { ingredients, price, purchaseBurger, userId } = this.props
     const order = {
       ingredients,
       price,
-      orderData: formData
+      orderData: formData,
+      userId
     }
 
     purchaseBurger(order)
-  }
-
-  checkInputValidity(value, rules) {
-    let isValid = true
-
-    if (rules.required) isValid = value.trim() !== '' && isValid
-
-    if (rules.minLength) isValid = value.length >= rules.minLength && isValid
-
-    if (rules.maxLength) isValid = value.length <= rules.maxLength && isValid
-
-    if (rules.email) {
-      const pattern = /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/
-      isValid = pattern.test(value) && isValid
-    }
-
-    return isValid
   }
 
   inputChangedHandler = event => {
     const orderForm = { ...this.state.orderForm }
     const elementForm = { ...orderForm[event.currentTarget.name] }
     elementForm.value = event.currentTarget.value
-    elementForm.valid = this.checkInputValidity(
+    elementForm.valid = checkInputValidity(
       elementForm.value,
       elementForm.validation
     )
@@ -156,21 +141,11 @@ class ContactData extends Component {
     this.setState({ orderForm })
   }
 
-  checkFormValidity() {
-    return Object.keys(this.state.orderForm).every(
-      key => this.state.orderForm[key].valid
-    )
-  }
-
   render() {
-    const formElements = []
-
-    for (let key in this.state.orderForm) {
-      formElements.push({
-        id: key,
-        config: this.state.orderForm[key]
-      })
-    }
+    const formElements = Object.keys(this.state.orderForm).map(key => ({
+      id: key,
+      config: this.state.orderForm[key]
+    }))
 
     return (
       <div className="contact-data">
@@ -190,7 +165,7 @@ class ContactData extends Component {
                 changed={this.inputChangedHandler}
               />
             ))}
-            <Button btnType="success" disabled={!this.checkFormValidity()}>
+            <Button btnType="success" disabled={!checkFormValidity(this.state.orderForm)}>
               ORDER
             </Button>
           </form>
@@ -206,8 +181,12 @@ const mapStateToProps = (state, ownProps) => {
   return {
     ingredients: state.burger.ingredients,
     price: state.burger.totalPrice,
-    loadingOrder: state.order.loadingOrder
+    loadingOrder: state.order.loadingOrder,
+    userId: state.auth.userId
   }
 }
 
-export default connect(mapStateToProps, { purchaseBurger })(withErrorHandler(ContactData, axios))
+export default connect(
+  mapStateToProps,
+  { purchaseBurger }
+)(withErrorHandler(ContactData, axiosOrders))

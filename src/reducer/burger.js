@@ -3,13 +3,17 @@ import {
   ADD_INGREDIENT,
   REMOVE_INGREDIENT,
   INIT_INGREDIENTS,
+  STOP_BUILDING,
+  PURCHASE_BURGER,
   SUCCESS,
-  FAIL
+  FAIL,
+  START
 } from '../constants'
 
 const initialStateBurger = {
   ingredients: null,
   totalPrice: INGREDIENT_PRICES.start,
+  building: false,
   error: false
 }
 
@@ -25,7 +29,8 @@ export default (burgerState = initialStateBurger, action) => {
           [payload.ingredient]: burgerState.ingredients[payload.ingredient] + 1
         },
         totalPrice:
-          burgerState.totalPrice + INGREDIENT_PRICES[payload.ingredient]
+          burgerState.totalPrice + INGREDIENT_PRICES[payload.ingredient],
+        building: true
       }
 
     case REMOVE_INGREDIENT:
@@ -36,7 +41,8 @@ export default (burgerState = initialStateBurger, action) => {
           [payload.ingredient]: burgerState.ingredients[payload.ingredient] - 1
         },
         totalPrice:
-          burgerState.totalPrice - INGREDIENT_PRICES[payload.ingredient]
+          burgerState.totalPrice - INGREDIENT_PRICES[payload.ingredient],
+        building: true
       }
 
     case INIT_INGREDIENTS + SUCCESS:
@@ -44,6 +50,7 @@ export default (burgerState = initialStateBurger, action) => {
         ...burgerState,
         ingredients: payload.ingredients,
         totalPrice: INGREDIENT_PRICES.start,
+        building: false,
         error: false
       }
 
@@ -51,6 +58,18 @@ export default (burgerState = initialStateBurger, action) => {
       return {
         ...burgerState,
         error: true
+      }
+
+    case STOP_BUILDING:
+      return {
+        ...burgerState,
+        building: false
+      }
+
+    case PURCHASE_BURGER + START:
+      return {
+        ...burgerState,
+        building: false
       }
 
     default:

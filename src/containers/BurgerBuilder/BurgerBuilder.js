@@ -12,7 +12,7 @@ import { axiosOrders } from '../../axios-instances'
 import { INGREDIENT_PRICES } from '../../constants'
 import { addIngredient, removeIngredient, initIngredients } from '../../ac'
 
-class BurgerBuilder extends Component {
+export class BurgerBuilder extends Component {
   state = {
     purchasing: false
   }

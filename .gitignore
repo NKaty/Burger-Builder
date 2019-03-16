@@ -1,7 +1,12 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
-.idea
+/.idea
 Project.xml
+
+# firebase
+.firebaserc
+firebase.json
+/.firebase
 
 # dependencies
 /node_modules
